@@ -117,15 +117,6 @@ export default function MessageBubble({ message, onAction }: MessageBubbleProps)
                <p className="text-xl text-white/70 leading-relaxed italic">
                  "{message.sanaResponse.reasoning}"
                </p>
-               
-               {message.sanaResponse.consequence && (
-                 <div className="pt-4 border-t border-white/5">
-                   <p className="text-sm text-white/30 font-medium">
-                     <span className="text-alert/60 font-black uppercase text-[10px] mr-2">Note:</span>
-                     {message.sanaResponse.consequence}
-                   </p>
-                 </div>
-               )}
             </div>
 
             {/* References */}
