@@ -83,28 +83,32 @@ export interface AnalyticsEvent {
   timestamp: string;
 }
 
+import crypto from "crypto";
+
+/**
+ * Anonymizes a user ID using SHA-256 hashing to prevent PII exposure in logs.
+ * @param userId - The raw user ID.
+ * @returns A hashed, anonymized string.
+ */
+function anonymizeUserId(userId: string): string {
+  if (userId === "anonymous" || !userId) return "anonymous";
+  return crypto.createHash("sha256").update(userId).digest("hex").slice(0, 16);
+}
+
 /**
  * Tracks an analytics event by logging it in BigQuery-compatible format.
  * In production, this would use the BigQuery Streaming Insert API.
  * Currently logs to Cloud Logging for downstream ETL into BigQuery.
  *
+ * @security User IDs are anonymized before logging to prevent PII leaks.
  * @param event - The analytics event to track.
- *
- * @example
- * ```typescript
- * trackAnalyticsEvent({
- *   eventType: "milestone_reached",
- *   userId: "user-123",
- *   city: "Hyderabad",
- *   payload: { milestone: "isRegistered", stepProgress: 2 },
- *   timestamp: new Date().toISOString(),
- * });
- * ```
  */
 export function trackAnalyticsEvent(event: AnalyticsEvent): void {
+  const safeUserId = anonymizeUserId(event.userId);
+  
   logToCloud(LogSeverity.INFO, `[Analytics] ${event.eventType}`, "BigQueryPipeline", {
     eventType: event.eventType,
-    userId: event.userId,
+    userId: safeUserId,
     city: event.city,
     ...event.payload,
   });
