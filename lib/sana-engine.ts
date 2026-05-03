@@ -79,12 +79,18 @@ export interface Reference {
 export interface SanaResponse {
   answer: string;
   nudge?: string;
-  options: StrategicOption[];
+  options: {
+    label: string;
+    info: string;
+    urgency: "high" | "normal" | "low";
+    intent: string;
+  }[];
   reasoning: string;
   state: ConversationState;
   suggestions: string[];
-  references: Reference[];
+  references: { name: string; url: string }[];
   confidence: number;
+  thinkingSteps?: string[]; // New: Perplexity-style thinking steps
 }
 
 /** In-memory cache for RAG context to reduce API calls. */

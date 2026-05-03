@@ -78,68 +78,135 @@ export default function MessageBubble({ message, onAction }: MessageBubbleProps)
         )}
 
         {/* Sana Response */}
-        {isSana && message.sanaResponse && (
-          <div className="space-y-8">
-            {/* Answer Text */}
-            <div className="text-2xl md:text-3xl text-white font-medium leading-relaxed tracking-tight">
-              {message.sanaResponse.answer}
+      <div className={cn("max-w-3xl w-full flex gap-4", isUser ? "flex-row-reverse" : "flex-row")}>
+        {/* Avatar */}
+        <div className="shrink-0 pt-2">
+          {isUser ? (
+            <div className="h-10 w-10 bg-white/10 rounded-full flex items-center justify-center text-white/50 shadow-inner">
+              <User className="h-5 w-5" />
             </div>
+          ) : (
+            <div className="h-12 w-12 bg-black rounded-2xl flex items-center justify-center text-sana shadow-[0_0_20px_rgba(163,255,0,0.15)] relative overflow-hidden border border-sana/20">
+              <div className="absolute inset-0 bg-gradient-to-tr from-sana to-transparent opacity-20" />
+              <Sparkles className="h-6 w-6 relative z-10" />
+            </div>
+          )}
+        </div>
 
-            {/* Strategic Options List */}
-            {message.sanaResponse.options && message.sanaResponse.options.length > 0 && (
-              <div className="space-y-4" role="group" aria-label="Recommended next steps">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 ml-2">
-                  Recommended Next Steps
-                </h4>
-                <div className="grid grid-cols-1 gap-3">
-                  {message.sanaResponse.options.map((opt: StrategicOption, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => onAction?.(opt.label, opt.intent)}
-                      aria-label={`Select option: ${opt.label}. ${opt.info}`}
-                      className={cn(
-                        "group/opt p-6 rounded-3xl border transition-all duration-300 text-left focus:ring-2 focus:ring-sana focus:outline-none",
-                        opt.urgency === "high"
-                          ? "bg-sana/5 border-sana/20 hover:bg-sana/10"
-                          : "bg-white/[0.03] border-white/10 hover:bg-white/[0.06]"
-                      )}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className={cn(
-                          "text-xl font-bold",
-                          opt.urgency === "high" ? "text-sana" : "text-white/80"
-                        )}>
-                          {opt.label}
-                        </span>
-                        {opt.urgency === "high" && (
-                          <span className="text-[8px] font-black bg-sana/20 text-sana px-2 py-0.5 rounded uppercase tracking-widest" role="status">
-                            Priority
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-lg text-white/50 leading-relaxed">{opt.info}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Trust & Reasoning Layer */}
-            <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] space-y-4">
-              {message.sanaResponse.nudge && (
-                <div className="mb-6 p-6 rounded-2xl bg-sana/10 border border-sana/20 animate-in fade-in slide-in-from-bottom-4 duration-1000" role="alert">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Bot className="h-4 w-4 text-sana" aria-hidden="true" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-sana">Proactive Nudge</span>
-                  </div>
-                  <p className="text-xl font-bold text-white italic">
-                    &ldquo;{message.sanaResponse.nudge}&rdquo;
-                  </p>
+        {/* Message Content */}
+        <div className={cn("flex flex-col gap-3 min-w-0 flex-1", isUser ? "items-end" : "items-start")}>
+          {isUser ? (
+            <div className="bg-white/5 border border-white/10 text-white px-6 py-4 rounded-[2rem] rounded-tr-none text-lg max-w-[85%] shadow-xl">
+              {message.content}
+            </div>
+          ) : (
+            <div className="w-full flex flex-col gap-4">
+              
+              {/* Perplexity-style Thinking Steps */}
+              {message.sanaResponse?.thinkingSteps && message.sanaResponse.thinkingSteps.length > 0 && (
+                <div className="w-full max-w-2xl bg-black/40 border border-white/5 rounded-2xl overflow-hidden mb-2">
+                  <button 
+                    onClick={() => setShowThinking(!showThinking)}
+                    className="w-full flex items-center justify-between px-5 py-3 hover:bg-white/5 transition-colors text-white/50 text-sm font-bold tracking-wide"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4 text-sana" />
+                      Intelligence Uplink Process
+                    </div>
+                    <ChevronDown className={cn("h-4 w-4 transition-transform", showThinking ? "rotate-180" : "")} />
+                  </button>
+                  <AnimatePresence>
+                    {showThinking && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }} 
+                        animate={{ height: "auto", opacity: 1 }} 
+                        exit={{ height: 0, opacity: 0 }}
+                        className="px-5 pb-4 space-y-3"
+                      >
+                        {message.sanaResponse.thinkingSteps.map((step, idx) => (
+                          <motion.div 
+                            key={idx}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.4 }}
+                            className="flex items-center gap-3 text-sm text-white/60"
+                          >
+                            <CheckCircle2 className="h-4 w-4 text-sana/50 shrink-0" />
+                            <span>{step}</span>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
 
-              <div className="flex items-center gap-3">
-                <div className="h-1 w-8 bg-sana/30 rounded-full" aria-hidden="true" />
+              {/* Perplexity-style Sources */}
+              {message.sanaResponse?.references && message.sanaResponse.references.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <div className="w-full text-xs font-black uppercase tracking-widest text-white/30 mb-1 flex items-center gap-2">
+                    <BookOpen className="h-3 w-3" /> Grounded Sources
+                  </div>
+                  {message.sanaResponse.references.map((ref, idx) => (
+                    <a
+                      key={idx}
+                      href={ref.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-white/70 transition-all hover:text-sana group"
+                    >
+                      <span className="text-white/30 font-mono group-hover:text-sana/50">{idx + 1}</span>
+                      {ref.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {/* Main Answer */}
+              {message.sanaResponse?.answer && (
+                <div className="text-white/90 text-lg leading-relaxed prose prose-invert max-w-none">
+                  {message.sanaResponse.answer.split('\n').map((line, i) => (
+                    <p key={i} className="mb-4 last:mb-0" dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, (match, p1) => `<strong class="text-white font-bold">${p1}</strong>`) }}>
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {/* Tactical Options Grid */}
+              {message.sanaResponse?.options && message.sanaResponse.options.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4" role="group">
+                  {message.sanaResponse.options.map((opt, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => onAction && onAction(opt.label, opt.intent || "option_selected")}
+                      className={cn(
+                        "group relative flex flex-col items-start text-left p-5 rounded-2xl border transition-all duration-300 overflow-hidden",
+                        opt.urgency === "high"
+                          ? "bg-sana/10 border-sana/30 hover:bg-sana hover:border-sana hover:text-black hover:shadow-[0_0_20px_rgba(163,255,0,0.4)]"
+                          : "bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10"
+                      )}
+                    >
+                      <div className="flex justify-between w-full items-center mb-2">
+                        <span className={cn(
+                          "font-bold tracking-wide transition-colors",
+                          opt.urgency === "high" ? "text-sana group-hover:text-black" : "text-white"
+                        )}>
+                          {opt.label}
+                        </span>
+                        <ArrowRight className={cn(
+                          "h-5 w-5 transition-transform group-hover:translate-x-1",
+                          opt.urgency === "high" ? "text-sana group-hover:text-black" : "text-white/50"
+                        )} />
+                      </div>
+                      <span className={cn(
+                        "text-sm transition-colors",
+                        opt.urgency === "high" ? "text-sana/70 group-hover:text-black/70" : "text-white/50"
+                      )}>
+                        {opt.info}
+                      </span>
+                    </button>
+                  ))}
+                </div>
                 <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Strategic Reasoning</h4>
               </div>
               <p className="text-xl text-white/70 leading-relaxed italic">

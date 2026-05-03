@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   roots: ["<rootDir>/__tests__"],
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   transform: {
@@ -18,9 +18,11 @@ module.exports = {
   collectCoverageFrom: [
     "lib/**/*.ts",
     "app/api/**/*.ts",
+    "components/**/*.tsx",
     "!**/*.d.ts",
     "!**/node_modules/**",
   ],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   coverageThreshold: {
     global: {
       branches: 70,
