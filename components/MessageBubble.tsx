@@ -207,50 +207,64 @@ export default function MessageBubble({ message, onAction }: MessageBubbleProps)
                     </button>
                   ))}
                 </div>
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Strategic Reasoning</h4>
-              </div>
-              <p className="text-xl text-white/70 leading-relaxed italic">
-                &ldquo;{message.sanaResponse.reasoning}&rdquo;
-              </p>
+              )}
+
+              {/* Strategic Reasoning */}
+              {message.sanaResponse?.reasoning && (
+                <div className="mt-4 p-6 bg-white/[0.01] border-t border-white/5 relative overflow-hidden" role="note">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.02),transparent_50%)]" />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lightbulb className="h-3 w-3 text-white/30" aria-hidden="true" />
+                      <span className="text-[10px] font-bold tracking-widest uppercase text-white/30">
+                        Strategic Reasoning
+                      </span>
+                    </div>
+                    <p className="text-sm text-white/40 leading-relaxed font-mono">
+                      {message.sanaResponse.reasoning}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* References */}
+              {message.sanaResponse?.references && message.sanaResponse.references.length > 0 && (
+                <nav className="flex flex-wrap gap-3 pt-4 border-t border-white/5" aria-label="Official sources and links">
+                  {message.sanaResponse.references.map((ref: Reference, idx: number) => (
+                    <a
+                      key={idx}
+                      href={ref.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest text-white/30 hover:text-sana hover:border-sana/40 transition-all focus:ring-2 focus:ring-sana focus:outline-none"
+                    >
+                      <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                      {ref.name}
+                      <span className="sr-only">(opens in new tab)</span>
+                    </a>
+                  ))}
+                </nav>
+              )}
+
+              {/* Dynamic Suggestions */}
+              {message.sanaResponse?.suggestions && message.sanaResponse.suggestions.length > 0 && (
+                <div className="flex flex-wrap gap-3 pt-6" role="group" aria-label="Follow-up suggestions">
+                  {message.sanaResponse.suggestions.map((suggestion: string, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => onAction?.(suggestion, "question")}
+                      aria-label={`Ask about: ${suggestion}`}
+                      className="flex items-center gap-3 px-8 py-4 rounded-[1.5rem] bg-sana/10 border border-sana/20 text-sana font-black uppercase text-xs tracking-widest hover:bg-sana/20 transition-all group/btn shadow-lg focus:ring-2 focus:ring-sana focus:outline-none"
+                    >
+                      {suggestion}
+                      <ArrowRight className="h-4 w-4 opacity-40 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {/* References */}
-            {message.sanaResponse.references && message.sanaResponse.references.length > 0 && (
-              <nav className="flex flex-wrap gap-3 pt-4 border-t border-white/5" aria-label="Official sources and links">
-                {message.sanaResponse.references.map((ref: Reference, idx: number) => (
-                  <a
-                    key={idx}
-                    href={ref.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest text-white/30 hover:text-sana hover:border-sana/40 transition-all focus:ring-2 focus:ring-sana focus:outline-none"
-                  >
-                    <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                    {ref.name}
-                    <span className="sr-only">(opens in new tab)</span>
-                  </a>
-                ))}
-              </nav>
-            )}
-
-            {/* Dynamic Suggestions */}
-            {message.sanaResponse.suggestions && (
-              <div className="flex flex-wrap gap-3 pt-6" role="group" aria-label="Follow-up suggestions">
-                {message.sanaResponse.suggestions.map((suggestion: string, idx: number) => (
-                  <button
-                    key={idx}
-                    onClick={() => onAction?.(suggestion)}
-                    aria-label={`Ask about: ${suggestion}`}
-                    className="flex items-center gap-3 px-8 py-4 rounded-[1.5rem] bg-sana/10 border border-sana/20 text-sana font-black uppercase text-xs tracking-widest hover:bg-sana/20 transition-all group/btn shadow-lg focus:ring-2 focus:ring-sana focus:outline-none"
-                  >
-                    {suggestion}
-                    <ArrowRight className="h-4 w-4 opacity-40 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </motion.div>
   );
