@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, CircleDashed, ArrowRight, ShieldCheck, MapPin, Database } from "lucide-react";
 import { useUser } from "@/context/UserContext";
+import { cn } from "@/lib/utils";
 
 export default function CommandNexus({ onNavigate }: { onNavigate: (tab: string) => void }) {
   const { location, role } = useUser();
