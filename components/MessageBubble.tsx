@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
   Bot,
@@ -9,6 +9,12 @@ import {
   Lightbulb,
   ExternalLink,
   ArrowRight,
+  Sparkles,
+  Globe,
+  ChevronDown,
+  CheckCircle2,
+  BookOpen,
+  Search
 } from "lucide-react";
 import { SanaResponse, StrategicOption, Reference } from "@/lib/sana-engine";
 
@@ -28,56 +34,27 @@ interface MessageBubbleProps {
 
 /**
  * MessageBubble renders a single conversation message.
- *
- * For user messages, it displays a simple text bubble.
- * For Sana responses, it renders a rich card with:
- * - Strategic answer text
- * - Proactive nudge banner
- * - Recommended next steps with urgency indicators
- * - Strategic reasoning (trust layer)
- * - Reference links to official sources
- * - Dynamic follow-up suggestions
- *
- * @param props - Message data and action callback.
- * @returns A fully accessible, animated message bubble.
  */
 export default function MessageBubble({ message, onAction }: MessageBubbleProps) {
   const isSana = message.role === "assistant";
+  const isUser = message.role === "user";
+  const [showThinking, setShowThinking] = useState(true);
+
+  // Auto-collapse thinking steps after 4 seconds
+  useEffect(() => {
+    if (isSana && message.sanaResponse?.thinkingSteps?.length) {
+      const timer = setTimeout(() => setShowThinking(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSana, message.sanaResponse]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        "flex w-full mb-12 gap-6 group",
-        !isSana && "flex-row-reverse"
-      )}
-      role="article"
-      aria-label={isSana ? "Sana AI response" : "Your message"}
+      className={cn("flex w-full mb-8", isUser ? "justify-end" : "justify-start")}
+      role="listitem"
     >
-      {/* Avatar */}
-      <div
-        className={cn(
-          "h-12 w-12 rounded-full flex items-center justify-center shrink-0 border transition-all duration-500",
-          isSana
-            ? "bg-sana/10 border-sana/30 text-sana shadow-[0_0_15px_rgba(163,255,0,0.2)] group-hover:shadow-[0_0_25px_rgba(163,255,0,0.4)]"
-            : "bg-white/5 border-white/10 text-white/40"
-        )}
-        aria-hidden="true"
-      >
-        {isSana ? <Bot className="h-6 w-6" /> : <User className="h-6 w-6" />}
-      </div>
-
-      {/* Content Container */}
-      <div className={cn("flex flex-col max-w-[85%]", !isSana && "items-end")}>
-        {/* User Message */}
-        {!isSana && (
-          <div className="bg-white/5 border border-white/10 px-8 py-5 rounded-[2rem] rounded-tr-none text-xl text-white/90 font-medium shadow-xl">
-            {message.content}
-          </div>
-        )}
-
-        {/* Sana Response */}
       <div className={cn("max-w-3xl w-full flex gap-4", isUser ? "flex-row-reverse" : "flex-row")}>
         {/* Avatar */}
         <div className="shrink-0 pt-2">
@@ -225,25 +202,6 @@ export default function MessageBubble({ message, onAction }: MessageBubbleProps)
                     </p>
                   </div>
                 </div>
-              )}
-
-              {/* References */}
-              {message.sanaResponse?.references && message.sanaResponse.references.length > 0 && (
-                <nav className="flex flex-wrap gap-3 pt-4 border-t border-white/5" aria-label="Official sources and links">
-                  {message.sanaResponse.references.map((ref: Reference, idx: number) => (
-                    <a
-                      key={idx}
-                      href={ref.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest text-white/30 hover:text-sana hover:border-sana/40 transition-all focus:ring-2 focus:ring-sana focus:outline-none"
-                    >
-                      <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                      {ref.name}
-                      <span className="sr-only">(opens in new tab)</span>
-                    </a>
-                  ))}
-                </nav>
               )}
 
               {/* Dynamic Suggestions */}
