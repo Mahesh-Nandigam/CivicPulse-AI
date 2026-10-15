@@ -1,4 +1,11 @@
-# 🚀 Sana AI – Your Civic Decision Intelligence Copilot
+# CivicPulse AI — Interactive Voter Guidance & Ballot Assistant
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Website-brightgreen?style=for-the-badge&logo=vercel)](https://civic-pulse-edpljow3i-mahesh-nandigams-projects.vercel.app)
+
+**🔗 Live Production URL:** [https://civic-pulse-edpljow3i-mahesh-nandigams-projects.vercel.app](https://civic-pulse-edpljow3i-mahesh-nandigams-projects.vercel.app)
+
+---
+
 
 [![Live Demo](https://img.shields.io/badge/Cloud_Run-Live-00C853?style=for-the-badge&logo=googlecloud)](https://sana-ai-111822887564.asia-south1.run.app)
 [![Gemini AI](https://img.shields.io/badge/AI-Gemini_1.5_Flash-6366F1?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
